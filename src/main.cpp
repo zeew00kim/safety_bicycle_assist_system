@@ -6,8 +6,6 @@ const float ACCEL_THRESHOLD = 1.1;
 
 const float TILT_ANGLE_THRESHOLD = 45.0;
 
-const int LIGHT_THRESHOLD = 300;        
-
 const unsigned long SENSOR_UPDATE_INTERVAL = 500; // 센서 갱신 주기
 
 const unsigned long MPU_UPDATE_INTERVAL = 500;  
@@ -64,13 +62,13 @@ void setup() {
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
 
-  pinMode(LED_PIN, OUTPUT);
+  pinMode(FRONT_LED_PIN, OUTPUT); // 전조등
+  pinMode(REAR_LED_PIN, OUTPUT);
 
   pinMode(HALL_SENSOR_PIN, INPUT_PULLUP);
 
   pinMode(BRAKE_LED_PIN, OUTPUT);
   pinMode(EMERGENCY_LED_PIN, OUTPUT); // 비상등
-  pinMode(ADDITIONAL_LED_PIN, OUTPUT); // 전조등
 
   Wire.begin();
   mpu.initialize();
@@ -92,26 +90,14 @@ void loop() {
     
     lastUpdateTime = currentTime;
 
-    calcAverageDistance(); // 초음파 센서 거리 측정 및 전송
+    // 초음파 센서 거리 측정 및 전송
+    calcAverageDistance(); 
 
-    int lightValue = analogRead(CDS_SENSOR_PIN);
-    sendSensorData("LIGHT", lightValue); 
-    delay(100);
+    // CDS 센서 데이터 읽기 및 전송
+    cds_data_read_transmit();
 
-    static unsigned long lastLightChange = 0;
-    if (currentTime - lastLightChange > 2000) {
-      if (lightValue > LIGHT_THRESHOLD) {
-        digitalWrite(LED_PIN, HIGH);
-        digitalWrite(ADDITIONAL_LED_PIN, HIGH);  // 추가된 LED도 점등  
-        sendSensorData("LED", 1);
-      } else {
-        digitalWrite(LED_PIN, LOW);   
-        digitalWrite(ADDITIONAL_LED_PIN, LOW);   // 추가된 LED 소등
-        sendSensorData("LED", 0);
-      }
-      lastLightChange = currentTime;
-    }
-    delay(100);
+    // 빈번한 점등/소등 토글 방지용 함수
+    auto_light_control(currentTime);
   }
 
   if (currentTime - lastMpuUpdateTime >= MPU_UPDATE_INTERVAL) {

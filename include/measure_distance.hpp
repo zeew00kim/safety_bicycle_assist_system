@@ -10,11 +10,15 @@
 #define TRIG_PIN_OFF   digitalWrite(TRIG_PIN, LOW);
 #define TRIG_PIN_ON    digitalWrite(TRIG_PIN, HIGH);
 
+// 후방 경고 알람 거리 4m
+#define WARNING_DISTANCE 400 
+
 enum class warningState_t : uint8_t {
     WARNING_STATE_OFF = 0,
     WARNING_STATE_ON  = 1
 };
 
+float measureDistance();
 void calcAverageDistance();
 
 #endif

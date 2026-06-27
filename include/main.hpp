@@ -3,15 +3,12 @@
 #include <MPU6050.h>
 #include "send_sensor_data.hpp"
 #include "measure_distance.hpp"
+#include "brightness.hpp"
 
 #define BT_SERIAL Serial1  
-#define CDS_SENSOR_PIN A0
-#define LED_PIN 6
-#define WARNING_DISTANCE 50
 #define HALL_SENSOR_PIN 2
 #define BRAKE_LED_PIN 7
 #define EMERGENCY_LED_PIN 4
-#define ADDITIONAL_LED_PIN 5
 
 extern float previousSpeed;
 extern const float BRAKE_THRESHOLD;

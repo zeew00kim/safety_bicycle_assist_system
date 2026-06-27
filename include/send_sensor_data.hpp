@@ -3,6 +3,6 @@
 
 #include "main.hpp"
 
-void sendSensorData(const String &key, double value);
+void sendSensorData(const String &key, const float value);
 
 #endif
