@@ -57,21 +57,21 @@ float calculateSpeed() {
 
 void setup() {
   Serial.begin(9600);
-  BT_SERIAL.begin(9600);  
+  BT_SERIAL.begin(9600);    // BLE 모듈 TX/RX 심볼 변조 속도
 
-  pinMode(TRIG_PIN, OUTPUT);
-  pinMode(ECHO_PIN, INPUT);
+  pinMode(TRIG_PIN, OUTPUT);      // 초음파 송출 핀
+  pinMode(ECHO_PIN, INPUT);       // 반사파 수신 핀
 
   pinMode(FRONT_LED_PIN, OUTPUT); // 전조등
-  pinMode(REAR_LED_PIN, OUTPUT);
+  pinMode(REAR_LED_PIN, OUTPUT);  // 후미등
 
-  pinMode(HALL_SENSOR_PIN, INPUT_PULLUP);
+  pinMode(HALL_SENSOR_PIN, INPUT_PULLUP); // RPM 측정 핀
 
-  pinMode(BRAKE_LED_PIN, OUTPUT);
+  pinMode(BRAKE_LED_PIN, OUTPUT);     // 브레이크등
   pinMode(EMERGENCY_LED_PIN, OUTPUT); // 비상등
 
-  Wire.begin();
-  mpu.initialize();
+  Wire.begin();       // I2C 통신 버스 초기화
+  mpu.initialize();   // MPU6050 센서 자체 초기화
 
   if (mpu.testConnection()) {
     Serial.println("자이로 센서 연결 성공");
@@ -79,6 +79,7 @@ void setup() {
     Serial.println("자이로 센서 연결 실패");
   }
 
+  // 휠 스포크의 자석이 홀 센서를 지날 때마다 ISR 호출 (홀 센서 신호를 외부 인터럽트로 감지)
   attachInterrupt(digitalPinToInterrupt(HALL_SENSOR_PIN), wheelRotationDetected, FALLING);
 }
 
@@ -96,7 +97,7 @@ void loop() {
     // CDS 센서 데이터 읽기 및 전송
     cds_data_read_transmit();
 
-    // 빈번한 점등/소등 토글 방지용 함수
+    // 전후방 Auto Light LED 점등/소등 상태 전송
     auto_light_control(currentTime);
   }
 
